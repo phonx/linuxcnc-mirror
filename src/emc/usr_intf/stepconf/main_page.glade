@@ -3,7 +3,9 @@
   <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy project-wide -->
   <object class="GtkWindow" id="window1">
+    <property name="title" translatable="yes">Stepconf -Stepper Configuration Wizard</property>
     <property name="resizable">False</property>
+    <property name="window_position">center</property>
     <signal name="destroy_event" handler="on_window1_destroy"/>
     <signal name="delete_event" handler="on_window1_destroy"/>
     <child>
@@ -142,9 +144,7 @@
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">This program creates configuration files (.ini and .hal) for "step and direction" milling machines and lathes connected to the PC parallel port.
 
-Stepconf requires a minimum 800 X 600 display resolution.
-You may need to collapse the 'Driver Timing Settings' and 
-Parallel Port Settings' expanders.</property>
+Stepconf requires a minimum 800 X 600 display resolution.</property>
                     <property name="wrap">True</property>
                   </object>
                   <packing>

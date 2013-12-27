@@ -125,11 +125,11 @@ def md5sum(filename):
 class Private_Data:
     def __init__(self):
         self.distdir = distdir
-        self.available_page =[['intro', 'Stepconf', True],['start', 'Start', True],
-                                ['base','Base Information',True],['pport1', 'Parallel Port 1',True],
-                                ['options','Options', True],['axisx', 'Axis X', True],
-                                ['axisy', 'Axis Y', True],['axisz', 'Axis Z', True],['axisa', 'Axis A', True],
-                                ['spindle','Spindle', True],['finished','Almost Done',True]
+        self.available_page =[['intro', _('Stepconf'), True],['start', _('Start'), True],
+                                ['base',_('Base Information'),True],['pport1', _('Parallel Port 1'),True],
+                                ['options',_('Options'), True],['axisx', _('Axis X'), True],
+                                ['axisy', _('Axis Y'), True],['axisz', _('Axis Z'), True],['axisa', _('Axis A'), True],
+                                ['spindle',_('Spindle'), True],['finished',_('Almost Done'),True]
                              ]
         # internalname / displayed name / steptime/ step space / direction hold / direction setup
         self.alldrivertypes = [
@@ -673,6 +673,7 @@ class StepconfApp:
 
     # check for realtime kernel
     def check_for_rt(self):
+        return True
         actual_kernel = os.uname()[2]
         if hal.is_sim :
             self.warning_dialog(self._p.MESS_NO_REALTIME,True)
@@ -963,7 +964,7 @@ class StepconfApp:
 #***********
     def test_axis(self, axis):
         if not self.check_for_rt(): return
-        SIG = self._P
+        SIG = self._p
 
         vel = float(self.w[axis + "maxvel"].get_text())
         acc = float(self.w[axis + "maxacc"].get_text())
@@ -1024,15 +1025,15 @@ class StepconfApp:
         """ % {
             'period': period,
             'ioaddr': self.d.ioaddr,
-            'steppin': self.d.find_output(step),
-            'dirpin': self.d.find_output(dir),
+            'steppin': self.find_output(step),
+            'dirpin': self.find_output(dir),
             'dirhold': self.d.dirhold + self.d.latency,
             'dirsetup': self.d.dirsetup + self.d.latency,
             'onestep': abs(1. / self.d[axis + "scale"]),
             'scale': self.d[axis + "scale"],
         })
 
-        if self.d.doublestep():
+        if self.doublestep():
             halrun.write("""
                 setp parport.0.reset-time %(resettime)d
                 setp stepgen.0.stepspace 0
@@ -1040,12 +1041,12 @@ class StepconfApp:
             """ % {
                 'resettime': self.d['steptime']
             })
-        amp = self.d.find_output(SIG.AMP)
+        amp = self.find_output(SIG.AMP)
         if amp:
             halrun.write("setp parport.0.pin-%(enablepin)02d-out 1\n"
                 % {'enablepin': amp})
 
-        estop = self.d.find_output(SIG.ESTOP)
+        estop = self.find_output(SIG.ESTOP)
         if estop:
             halrun.write("setp parport.0.pin-%(estoppin)02d-out 1\n"
                 % {'estoppin': estop})
@@ -1124,8 +1125,24 @@ class StepconfApp:
         halrun.close()
 
 #**********************************
-# config building helper functions
+# Common helper functions
 #**********************************
+
+    def find_input(self, input):
+        inputs = set((10, 11, 12, 13, 15))
+        for i in inputs:
+            pin = getattr(self.d, "pin%d" % i)
+            inv = getattr(self.d, "pin%dinv" % i)
+            if pin == input: return i
+        return None
+
+    def find_output(self, output):
+        outputs = set((1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 16, 17))
+        for i in outputs:
+            pin = self.d["pin%d" % i]
+            inv = self.d["pin%dinv" % i]
+            if pin == output: return i
+        return None
 
     def doublestep(self, steptime=None):
         if steptime is None: steptime = self.d.steptime

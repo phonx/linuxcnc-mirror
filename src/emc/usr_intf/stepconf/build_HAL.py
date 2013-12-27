@@ -389,22 +389,6 @@ class HAL:
             print >>file, "net %s <= parport.0.pin-%02d-in" \
                 % (p, num)
 
-    def find_input(self, input):
-        inputs = set((10, 11, 12, 13, 15))
-        for i in inputs:
-            pin = getattr(self.d, "pin%d" % i)
-            inv = getattr(self.d, "pin%dinv" % i)
-            if pin == input: return i
-        return None
-
-    def find_output(self, output):
-        outputs = set((1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 16, 17))
-        for i in outputs:
-            pin = self.d["pin%d" % i]
-            inv = self.d["pin%dinv" % i]
-            if pin == output: return i
-        return None
-
     def connect_output(self, file, num):
         p = self.d['pin%d' % num]
         i = self.d['pin%dinv' % num]
