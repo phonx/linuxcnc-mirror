@@ -60,7 +60,7 @@ class Pages:
         cur_name,cur_text,cur_state = self._p.available_page[cur]
         while u < len(self._p.available_page):
             name,text,state = self._p.available_page[u]
-            dbg( "FWD search %s,%s,%s,%s,%d"%(u,name,text,state,len(self._p.available_page)))
+            dbg( "FWD search %s,%s,%s,%s,of %d pages"%(u,name,text,state,len(self._p.available_page)-1))
             if state:
                 if not self['%s_finish'%cur_name]():
                     self.w.notebook1.set_current_page(u)
@@ -87,7 +87,7 @@ class Pages:
         cur_name,cur_text,cur_state = self._p.available_page[cur]
         while u > -1:
             name,text,state = self._p.available_page[u]
-            dbg( "BACK search %s,%s,%s,%s,%d"%(u,name,text,state,len(self._p.available_page)))
+            dbg( "BACK search %s,%s,%s,%s,of %d pages"%(u,name,text,state,len(self._p.available_page)-1))
             if state:
                 if not cur == len(self._p.available_page)-1:
                     self['%s_finish'%cur_name]()
@@ -497,8 +497,27 @@ class Pages:
     def on_aaxistest_clicked(self, *args): self.a.test_axis('a')
 
 #*********************
-# General Axis methods
+# General Axis methods and callbacks
 #*********************
+
+    def on_jogminus_pressed(self, w):
+        self.a.jogminus = 1
+        self.a.update_axis_test()
+
+    def on_jogminus_released(self, w):
+        self.a.jogminus = 0
+        self.a.update_axis_test()
+
+    def on_jogplus_pressed(self, w):
+        self.a.jogplus = 1
+        self.a.update_axis_test()
+    def on_jogplus_released(self, w):
+        self.a.jogplus = 0
+        self.a.update_axis_test()
+
+    def update_axis_params(self, *args):
+        self.a.update_axis_test()
+
     def axis_prepare(self, axis):
         def set_text(n): self.w[axis + n].set_text("%s" % self.d[axis + n])
         def set_active(n): self.w[axis + n].set_active(self.d[axis + n])

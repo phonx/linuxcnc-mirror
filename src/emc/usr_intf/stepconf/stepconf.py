@@ -40,6 +40,7 @@ import commands
 import hal
 import gobject
 import shutil
+import time
 
 import traceback
 # otherwise, on hardy the user is shown spurious "[application] closed
@@ -625,6 +626,7 @@ class StepconfApp:
         window.show()
 
         # Initialize data
+        self.axis_under_test = None
         for i in self._p.alldrivertypes:
             self.w.drivertype.append_text(i[1])
         self.w.drivertype.append_text(_("Other"))
@@ -632,6 +634,8 @@ class StepconfApp:
         self.w.wizard_image.set_from_pixbuf(wiz_pic)
         self.p.intro_prepare()
         self.w.title_label.set_text(self._p.available_page[0][1])
+        if debug:
+            self.w.window1.set_title('Stepconf -debug mode')
 
     def build_base(self):
         base = os.path.expanduser("~/linuxcnc/configs/%s" % self.d.machinename)
@@ -673,14 +677,19 @@ class StepconfApp:
 
     # check for realtime kernel
     def check_for_rt(self):
-        return True
         actual_kernel = os.uname()[2]
         if hal.is_sim :
             self.warning_dialog(self._p.MESS_NO_REALTIME,True)
-            return False
+            if debug:
+                return True
+            else:
+                return False
         elif hal.is_rt and not hal.kernel_version == actual_kernel:
             self.warning_dialog(self._p.MESS_KERNAL_WRONG + '%s'%hal.kernel_version,True)
-            return False
+            if debug:
+                return True
+            else:
+                return False
         else:
             return True
 
@@ -990,7 +999,7 @@ class StepconfApp:
         if period > 100000:
             period = 100000
 
-        self.halrun = halrun = os.popen("halrun -sf > /dev/null", "w")
+        self.halrun = halrun = os.popen("halrun -Is", "w")
 
         axnum = "xyza".index(axis)
         step = axis + "step"
@@ -1056,6 +1065,8 @@ class StepconfApp:
             if inv:
                 halrun.write("setp parport.0.pin-%(pin)02d-out-invert 1\n"
                     % {'pin': pin}) 
+        if debug:
+            halrun.write("loadusr halmeter sig cmd -g 275 415\n")
 
         self.w.dialog1.set_title(_("%s Axis Test") % axis.upper())
 
@@ -1108,7 +1119,7 @@ class StepconfApp:
         self.w.testacc.set_value(acc)
         self.w.testvel.set_value(vel)
         self.axis_under_test = axis
-        self.update_axis_params()
+        self.update_axis_test()
 
         halrun.write("start\n"); halrun.flush()
         self.w.dialog1.show_all()
@@ -1121,8 +1132,32 @@ class StepconfApp:
             halrun.write("""setp parport.0.pin-%02d-out 0\n""" % estop)
 
         time.sleep(.001)
-
         halrun.close()
+
+    def update_axis_test(self, *args):
+        print 'update'
+        axis = self.axis_under_test
+        if axis is None: return
+        halrun = self.halrun
+        halrun.write("""
+            setp stepgen.0.maxaccel %(accel)f
+            setp stepgen.0.maxvel %(vel)f
+            setp steptest.0.jog-minus %(jogminus)s
+            setp steptest.0.jog-plus %(jogplus)s
+            setp steptest.0.run %(run)s
+            setp steptest.0.amplitude %(amplitude)f
+            setp steptest.0.maxvel %(vel)f
+            setp steptest.0.dir %(dir)s
+        """ % {
+            'jogminus': self.jogminus,
+            'jogplus': self.jogplus,
+            'run': self.w.run.get_active(),
+            'amplitude': self.w.testamplitude.get_value(),
+            'accel': self.w.testacc.get_value(),
+            'vel': self.w.testvel.get_value(),
+            'dir': self.w.testdir.get_active(),
+        })
+        halrun.flush()
 
 #**********************************
 # Common helper functions
