@@ -76,6 +76,8 @@ class Pages:
         elif u == len(self._p.available_page):
             name,text,state = self._p.available_page[cur]
             self['%s_finish'%name]()
+        if cur ==0:
+            self.w.button_back.set_sensitive(True)
 
     # seaches (self._p.available_page) from the current page backward,
     # for the next page that is True or till first page.
@@ -100,6 +102,8 @@ class Pages:
         # Not last page? change finish button label
         if u <= len(self._p.available_page):
             self.w.button_fwd.set_image(self.w.fwd_image)
+        if u == 0:
+            self.w.button_back.set_sensitive(False)
 
     def set_buttons_sensitive(self,fstate,bstate):
         self.w.button_fwd.set_sensitive(fstate)

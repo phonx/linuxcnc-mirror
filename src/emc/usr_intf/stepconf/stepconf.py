@@ -219,7 +219,7 @@ class Private_Data:
         self.MESS_NO_ESTOP = _("You need to designate an E-stop input pin in the Parallel Port Setup page for this program.")
         self.MESS_PYVCP_REWRITE =_("OK to replace existing custom pyvcp panel and custom_postgui.hal file ?\nExisting custompanel.xml and custom_postgui.hal will be renamed custompanel_backup.xml and postgui_backup.hal.\nAny existing file named custompanel_backup.xml and custom_postgui.hal will be lost. ")
         self.MESS_ABORT = _("Quit Stepconf and discard changes?")
-        self.MESS_QUIT = _("Do you want to quit?")
+        self.MESS_QUIT = _("The confgiration has been built and saved\nDo you want to quit?")
         self.MESS_NO_REALTIME = _("You are using a simulated-realtime version of LinuxCNC, so testing / tuning of hardware is unavailable.")
         self.MESS_KERNEL_WRONG = _("You are using a realtime version of LinuxCNC but didn't load a realtime kernel so testing / tuning of hardware is\
                  unavailable.\nThis is possibly because you updated the OS and it doesn't automatically load the RTAI kernel anymore.\n"+
@@ -634,6 +634,7 @@ class StepconfApp:
         self.w.wizard_image.set_from_pixbuf(wiz_pic)
         self.p.intro_prepare()
         self.w.title_label.set_text(self._p.available_page[0][1])
+        self.w.button_back.set_sensitive(False)
         if debug:
             self.w.window1.set_title('Stepconf -debug mode')
 
