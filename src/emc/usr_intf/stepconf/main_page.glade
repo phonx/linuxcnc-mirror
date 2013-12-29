@@ -195,10 +195,6 @@ Stepconf requires a minimum 800 X 600 display resolution.</property>
       </object>
     </child>
   </object>
-  <object class="GtkImage" id="image2">
-    <property name="visible">True</property>
-    <property name="stock">gtk-go-forward</property>
-  </object>
   <object class="GtkImage" id="image3">
     <property name="visible">True</property>
     <property name="stock">gtk-go-back</property>
