@@ -297,7 +297,7 @@ class HAL:
             print >>f1, _("# Include your customized HAL commands here")
             print >>f1, _("# The commands in this file are run after the AXIS GUI (including PyVCP panel) starts") 
             print >>f1
-            if self.d.pyvcphaltype == 1 and self.d.pyvcpconnect: # spindle speed/tool # display
+            if self.d.pyvcp and self.d.pyvcphaltype == 1 and self.d.pyvcpconnect: # spindle speed/tool # display
                   print >>f1, _("# **** Setup of spindle speed display using pyvcp -START ****")
                   if encoder:
                       print >>f1, _("# **** Use ACTUAL spindle velocity from spindle encoder")
@@ -335,6 +335,8 @@ class HAL:
                       print >>f1
                       print >>f1, ("net spindle-at-speed => pyvcp.spindle-at-speed-led")
                       print >>f1, ("sets spindle-at-speed true")
+            else:
+                print >>f1, ("sets spindle-at-speed true")
 
         if self.d.customhal or self.d.classicladder or self.d.halui:
             custom = os.path.join(base, "custom.hal")
