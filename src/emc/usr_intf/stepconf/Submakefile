@@ -1,6 +1,6 @@
 STEPCONF_MODULES = pages build_INI build_HAL
 
-PYTARGETS += ../bin/stepconf  ../share/linuxcnc/linuxcnc-wizard.gif $(patsubst %,../lib/python/stepconf/%.py,$(STEPCONF_MODULES)) \
+PYTARGETS += ../bin/stepconf  ../lib/python/stepconf/__init__.py ../share/linuxcnc/linuxcnc-wizard.gif $(patsubst %,../lib/python/stepconf/%.py,$(STEPCONF_MODULES)) \
 	../share/linuxcnc/main_page.glade \
 	../share/linuxcnc/base.glade \
 	../share/linuxcnc/start.glade \
@@ -26,7 +26,7 @@ PYI18NSRCS += emc/usr_intf/stepconf/stepconf.py $(patsubst %,emc/usr_intf/stepco
 	emc/usr_intf/stepconf/axisa.glade \
 	emc/usr_intf/stepconf/finished.glade
 
-../lib/python/steconf/__init__.py:
+../lib/python/stepconf/__init__.py:
 	$(ECHO) building python init $(notdir $@)
 	@mkdir -p ../lib/python/stepconf
 	@touch $@
