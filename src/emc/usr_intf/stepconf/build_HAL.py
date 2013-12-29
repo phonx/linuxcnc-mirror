@@ -155,7 +155,7 @@ class HAL:
             print >>file, "setp pwmgen.0.dither-pwm true"
         else: 
             print >>file, "net spindle-cmd <= motion.spindle-speed-out"
-
+        print >>file, "net spindle-at-speed => motion.spindle-at-speed"
         if SIG.ON in outputs and not pwm:
             print >>file, "net spindle-on <= motion.spindle-on"
         if SIG.CW in outputs:
